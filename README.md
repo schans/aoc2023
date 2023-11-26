@@ -1,1 +1,1 @@
-# Advent of Code 2022 :christmas_tree: :santa:
+# Advent of Code 2023 :christmas_tree: :santa:

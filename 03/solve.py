@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from pprint import pprint
 import fileinput
 
 # counters
@@ -14,7 +13,7 @@ DIRS = ((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1))
 
 r = 0
 for line in fileinput.input():
-    l = line.strip().rstrip("\n")
+    l = line.strip()
     if not l:
         continue
 
@@ -24,15 +23,17 @@ for line in fileinput.input():
         if c.isdigit():
             rn = True
             n += c
-        else:
-            if rn:
-                D[(r, i - len(n))] = n
+            continue
+
+        if rn:
+            D[(r, i - len(n))] = n
             rn = False
             n = ''
-            if c != '.':
-                S.add((r, i))
-                if c == '*':
-                    G.add((r, i))
+
+        if c != '.':
+            S.add((r, i))
+            if c == '*':
+                G.add((r, i))
     r += 1
 
 # part 1

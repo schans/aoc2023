@@ -10,6 +10,9 @@ G = set()
 
 DIRS = ((-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1))
 
+# grid = [l.strip() for l in fileinput.input()]
+# H = len(grid)
+# W = len(grid[0])
 
 r = 0
 for line in fileinput.input():
@@ -30,7 +33,7 @@ for line in fileinput.input():
             rn = False
             n = ''
 
-        if c != '.':
+        if c != '.' and c != "\n":
             S.add((r, i))
             if c == '*':
                 G.add((r, i))

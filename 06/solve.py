@@ -8,6 +8,24 @@ T = T2 = 0
 fi = fileinput.input()
 TS = [int(x) for x in next(fi).split()[1:]]
 DS = [int(x) for x in next(fi).split()[1:]]
+tn = int(''.join([str(i) for i in TS]))
+dn = int(''.join([str(i) for i in DS]))
+
+
+# # bruteforcace
+# def get_num(t, d):
+#     n = 0
+#     for i in range(t):
+#         c = i * (t-i)
+#         if c > d:
+#             n += 1
+#     return n
+#
+#
+# a = 1
+# for i in range(len(TS)):
+#     a *= get_num(TS[i], DS[i])
+# print("Tot", a, get_num(tn, dn))
 
 
 def get_diff(w, t, d) -> int:
@@ -49,8 +67,6 @@ for i in range(len(TS)):
     ways = find_higher(TS[i]//2, TS[i], TS[i], DS[i]) - find_lower(0, TS[i]//2, TS[i], DS[i]) + 1
     T *= ways
 
-tn = int(''.join([str(i) for i in TS]))
-dn = int(''.join([str(i) for i in DS]))
 T2 = find_higher(tn//2, tn, tn, dn) - find_lower(0, tn//2, tn, dn) + 1
 
 print(f"Tot {T} {T2}")

@@ -12,12 +12,11 @@ tn = int(''.join([str(i) for i in TS]))
 dn = int(''.join([str(i) for i in DS]))
 
 
-# # bruteforcace
+# # # bruteforcace
 # def get_num(t, d):
 #     n = 0
-#     for i in range(t):
-#         c = i * (t-i)
-#         if c > d:
+#     for h in range(t):
+#         if h * (t-h) > d:
 #             n += 1
 #     return n
 #

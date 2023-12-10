@@ -44,31 +44,21 @@ for dx, dy in DIRS:
         if not (0 <= x < W and 0 <= y < H):
             # out of grid
             break
-        n = G[y][x]
 
+        n = G[y][x]
         L.append((x, y))  # start in here twice for loop
         LS.add((x, y))
 
-        if (x, y) == start:
-            # looped
+        if n == 'S':
             loop = True
             break
-
-        if n == '.':
+        elif n == '.':
             break
         elif n == '|':
-            if dx == 0 and dy == 1:
-                dx, dy = 0, 1
-            elif dx == 0 and dy == -1:
-                dx, dy = 0, -1
-            else:
+            if dx != 0:
                 break
         elif n == '-':
-            if dx == 1 and dy == 0:
-                dx, dy = 1, 0
-            elif dx == -1 and dy == 0:
-                dx, dy = -1, 0
-            else:
+            if dy != 0:
                 break
         elif n == 'L':
             if dx == 0 and dy == 1:
@@ -98,6 +88,8 @@ for dx, dy in DIRS:
                 dx, dy = 0, 1
             else:
                 break
+        else:
+            assert False, f"unkown char {n}"
 
     if loop:
         break

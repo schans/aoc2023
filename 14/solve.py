@@ -136,44 +136,31 @@ move_left()
 move_down()
 move_right()
 
-# some iterations to settle in cycle
+# find cycle start at 1 because first iter already done
+seen = set()
+seen_idx = list()
+seen_idx.append({})  # fake for initial state
+start = 0
+cycle_len = 0
 for i in range(1, 1000):
+    tl = tuple(o for o in O)
+    if tl in seen:
+        start = seen_idx.index(tl)
+        cycle_len = i - start
+        break
+    seen.add(tl)
+    seen_idx.append(tl)
+
+    # iterate
     move_up()
     move_left()
     move_down()
     move_right()
 
-# find "needle" value at this point
-needle = 0
-for (r, _) in O:
-    needle += R - r
-# print("using needle 1000", needle)
-
-# iterate till needle is found
-cycle = list()
-for i in range(1000):
-    move_up()
-    move_left()
-    move_down()
-    move_right()
-    load = 0
-    for (r, _) in O:
-        load += R - r
-    cycle.append(load)
-    if load == needle:
-        # print("load", i+1, load, len(cycle))
-        break
-
-# find offset
-offset = 0
-for i in range(len(cycle)):
-    if cycle[1000 % len(cycle) + i] == needle:
-        # print("found offset", i)
-        offset = i
-        break
-
-# lookup value in cycle
 ITERS = 1_000_000_000
-T2 = cycle[ITERS % len(cycle) + offset]
+FO = seen_idx[(ITERS-start) % cycle_len + start]
+
+for (r, _) in FO:
+    T2 += R - r
 
 print(f"Tot {T} {T2}")

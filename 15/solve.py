@@ -63,9 +63,9 @@ for h, b in B.items():
     if len(b) == 0:
         continue
 
-    for i, (label, lens) in enumerate(b):
+    for i, (label, lens) in enumerate(b, 1):
         sum = int(h) + 1
-        sum *= (i+1)
+        sum *= i
         sum *= int(lens)
         T2 += sum
 

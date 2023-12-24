@@ -135,30 +135,52 @@ def get_left_fill_line(cr, right_c, lines, points):
 def get_left_fill(top_r, bottom_r, right_c, lines, points):
     # fill inside the lines to the left
     t = 0
-
+    assert bottom_r > top_r, "wrong direction"
     # print("  left fill", top_r, bottom_r, right_c)
-    # very slow.. can be optimized be finding next point1
-    for cr in range(top_r+1, bottom_r):
+    cr = top_r+1
+    while cr < bottom_r:
         first_left = -1_000_000_000_000
+        first_left_d = None
+        d = None
         for (r, c) in points:
             if c < right_c:
                 (d, n) = lines[(r, c)]
                 if d == "L" and r == cr:
-                    first_left = max(first_left, c)
+                    if c > first_left:
+                        first_left = c
+                        first_left_d = d
                 if d == "R" and r == cr:
-                    first_left = max(first_left, c+n)
+                    if c+n > first_left:
+                        first_left = c + n
+                        first_left_d = d
                 if d == "U" and r-n < cr < r:
-                    first_left = max(first_left, c)
+                    if c > first_left:
+                        first_left = c
+                        first_left_d = d
                 if d == "D" and r < cr < r+n:
-                    first_left = max(first_left, c)
+                    if c > first_left:
+                        first_left = c
+                        first_left_d = d
 
+        nlines = 1
+        if first_left_d in ['U', 'D']:
+            # find first point something might change
+            first_r = bottom_r
+            for (r, c) in points:
+                if cr < r < bottom_r:
+                    first_r = min(first_r, r)
+            nlines = first_r - cr
+            assert nlines > 0
+
+        cr += nlines
         # print("    first left", (cr, right_c), "is", first_left)
-        t += right_c-first_left - 1  # inner
+        t += (right_c-first_left - 1) * nlines  # inner
     return t
 
 
 def round_fill(tl, lines, points):
     # route is clockwise
+    # follow route and fill all "to the left"
     inside = 'R'
     t = 0
     pd = 'U'
@@ -180,8 +202,6 @@ def round_fill(tl, lines, points):
                     inside = 'R'
                 else:
                     inside = 'L'
-            if inside == 'L':
-                t += get_left_fill(r, nr, c, lines, points)
         elif d == 'D':
             nr = r + n
             nc = c

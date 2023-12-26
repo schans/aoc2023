@@ -100,7 +100,7 @@ T = TL*TH
 
 # part 2
 T2 = 1
-# from instruction inspection
+# from instruction inspection, 4 regs with 9 bit values
 registers = ['rg', 'pp', 'zp', 'sj']
 for check in registers:
     reset()

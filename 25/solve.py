@@ -30,8 +30,6 @@ for f, tl in W.items():
 
 W = WG
 
-# C = defaultdict(int)
-
 
 def dijkstra(start, end, wires):
     q = list()
@@ -73,73 +71,69 @@ def count_connected(start, wires):
     return len(seen)
 
 
-# find two points far apart
-start = list(W.keys())[1]
-maxd = 0
-maxe = None
-maxp = []
-for end in W.keys():
-    if end == start:
+start = list(W.keys())[0]
+cuts = list()
+for maxe in W.keys():
+    # test two points if they are on the different groups
+    if maxe == start:
         continue
-    d, p = dijkstra(start, end, W)
-    if d > maxd:
-        maxd = d
-        maxe = end
-        maxp = p
 
+    # shortest path
+    maxd, maxp = dijkstra(start, maxe, W)
 
-# remove parts on path and check for len diff
-firsts = list()
-for i in range(maxd):
-    a = maxp[i]
-    b = maxp[i+1]
-
-    CW = deepcopy(W)
-    CW[a] = CW[a] - {b}
-    CW[b] = CW[b] - {a}
-    d, p = dijkstra(start, maxe, CW)
-    if d >= maxd:
-        firsts.append((a, b, d, p))
-
-# remove parts on path and check for len diff, again, removing 2
-seconds = list()
-for first in firsts:
-    (a, b, maxd, maxp) = first
+    # remove parts on path and check for len diff
+    firsts = list()
     for i in range(maxd):
-        c = maxp[i]
-        d = maxp[i+1]
+        a = maxp[i]
+        b = maxp[i+1]
 
         CW = deepcopy(W)
         CW[a] = CW[a] - {b}
         CW[b] = CW[b] - {a}
-        CW[c] = CW[c] - {d}
-        CW[d] = CW[d] - {c}
-        dist, p = dijkstra(start, maxe, CW)
-        if dist > maxd:
-            seconds.append((a, b, c, d, dist, p))
+        d, p = dijkstra(start, maxe, CW)
+        if d >= maxd:
+            firsts.append((a, b, d, p))
 
-# remove parts on path and check for len diff, 3rd, check for disconnected
-candidates = set()
-for second in seconds:
-    (a, b, c, d, maxd, maxp) = second
-    for i in range(maxd):
-        e = maxp[i]
-        f = maxp[i+1]
+    # remove parts on path and check for len diff, again, removing 2
+    seconds = list()
+    for first in firsts:
+        (a, b, maxd, maxp) = first
+        for i in range(maxd):
+            c = maxp[i]
+            d = maxp[i+1]
 
-        CW = deepcopy(W)
-        CW[a] = CW[a] - {b}
-        CW[b] = CW[b] - {a}
-        CW[c] = CW[c] - {d}
-        CW[d] = CW[d] - {c}
-        CW[e] = CW[e] - {f}
-        CW[f] = CW[f] - {e}
-        dist, p = dijkstra(start, maxe, CW)
-        if dist == -1:
-            # disconnected
-            candidates.add(((a, b), (c, d), (e, f)))
+            CW = deepcopy(W)
+            CW[a] = CW[a] - {b}
+            CW[b] = CW[b] - {a}
+            CW[c] = CW[c] - {d}
+            CW[d] = CW[d] - {c}
+            dist, p = dijkstra(start, maxe, CW)
+            if dist > maxd:
+                seconds.append((a, b, c, d, dist, p))
 
-assert len(candidates) == 1, "wrong number of candidates found"
-cuts = candidates.pop()
+    # remove parts on path and check for len diff, 3rd, check for disconnected
+    candidates = set()
+    for second in seconds:
+        (a, b, c, d, maxd, maxp) = second
+        for i in range(maxd):
+            e = maxp[i]
+            f = maxp[i+1]
+
+            CW = deepcopy(W)
+            CW[a] = CW[a] - {b}
+            CW[b] = CW[b] - {a}
+            CW[c] = CW[c] - {d}
+            CW[d] = CW[d] - {c}
+            CW[e] = CW[e] - {f}
+            CW[f] = CW[f] - {e}
+            dist, p = dijkstra(start, maxe, CW)
+            if dist == -1:
+                # disconnected
+                candidates.add(((a, b), (c, d), (e, f)))
+
+    if len(candidates) == 1:
+        cuts = candidates.pop()
+        break
 
 # remove cuts from graph
 CW = deepcopy(W)
@@ -148,7 +142,6 @@ for (a, b) in cuts:
     CW[b] = CW[b] - {a}
 
 c1 = count_connected(start, CW)
-c2 = count_connected(maxe, CW)
-T = c1*c2
+T = c1*(len(W)-c1)
 
 print(f"Tot {T}")
